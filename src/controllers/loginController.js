@@ -1,8 +1,20 @@
-const Login = require('../mo')
+const Login = require('../models/LoginModel')
 exports.index = (req, res) => {
     res.render('login');
   };
   
- exports.register = (req, res) => {
-    res.send('req.body');
+ exports.register = async (req, res) => {
+    const login = new Login(req.body)
+    await login.register(); // registra e valida os campos
+
+    if(login.errors.length > 0){
+        req.flash('errors', login.errors);
+        req.session.save(function(){
+           return res.redirect('back');
+        })
+        return;
+    }
+    res.send(login.errors);
+
+    // res.send(login.body);
   };
