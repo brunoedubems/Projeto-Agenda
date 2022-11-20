@@ -4,17 +4,25 @@ exports.index = (req, res) => {
   };
   
  exports.register = async (req, res) => {
-    const login = new Login(req.body)
-    await login.register(); // registra e valida os campos
-
-    if(login.errors.length > 0){
-        req.flash('errors', login.errors);
+    try{
+        const login = new Login(req.body)
+        await login.register(); // registra e valida os campos
+    
+        if(login.errors.length > 0){
+            req.flash('errors', login.errors);
+            req.session.save(function(){
+               return res.redirect('back');
+            });
+            return;
+        }
+        //quando o usuario for criado com sucesso
+        req.flash('success', 'usuario criado com sucess');
         req.session.save(function(){
            return res.redirect('back');
-        })
-        return;
+        });
+    } catch(e) {
+        console.log(e)
+   return  res.render('404')
     }
-    res.send(login.errors);
 
-    // res.send(login.body);
   };
