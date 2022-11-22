@@ -12,15 +12,9 @@ const ContatoSchema = new mongoose.Schema({
 const ContatoModel = mongoose.model('Contato', ContatoSchema);
 
 function Contato(body) {
-this.body = body;
+this.body = body; 
 this.errors = [];
 this.contato = null;
-}
-
-Contato.buscaPorId = async function(id) {
-  if(typeof id !== 'string') return;
-const user = await ContatoModel.findById(id);
-return user;
 }
 
 Contato.prototype.register = async function() {
@@ -59,6 +53,26 @@ Contato.prototype.edit = async function(id){
   this.valida();
   if(this.erros.length > 0) return;
   this.contato = await ContatoModel.findByIdUpdate(id, this.body, { new: true });
+};
+
+//metodos estáticos
+Contato.buscaPorId = async function(id) {
+  if(typeof id !== 'string') return;
+const contato = await ContatoModel.findById(id);
+return contato;
 }
+
+Contato.buscaContatos = async function(id) {
+const contatos = await ContatoModel.find()
+.sort({ criadoEM: -1 });  //1 PARA ORDEM CRESCENTE -- 2 PARA DECRESCENTE
+return contatos;
+}
+
+Contato.delete = async function(id) {
+  if(typeof id !== 'string') return;
+const contato = await ContatoModel.findOneAndDelete(id);
+return contato;
+}
+
 
 module.exports = Contato;
